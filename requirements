@@ -3,5 +3,5 @@ tensorflow
 flask
 dash
 dash-bootstrap-components
-opencv-python
 dash-gif-component
+pillow
