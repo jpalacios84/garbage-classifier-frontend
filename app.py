@@ -64,10 +64,20 @@ app.layout = html.Div(children=[
 def classify_from_cam(img):
     if img != None:
         try:
+            style_base={
+                    'background-color' : 'white',
+                    'font-size' : 'x-large',
+                }
+            style_with_bold = style_base.copy()
+            style_with_bold['font-weight'] = 'bold'                        
             img = Image.open(BytesIO(base64.b64decode(img.split(';')[1].split(',')[1])))
             resize = tf.image.resize(img, (256,256))
             yhat = model.predict(np.expand_dims(resize/255, 0)).reshape(-1)
-            children = [dbc.Row(f'{l} ({round(100*y)}%)', justify='center') for l,y in zip(['Compost', 'Recyclable', 'Trash'], yhat)]
+            winner = predict_dict[np.argmax(yhat)]
+            children = [dbc.Row(f'{l} ({round(100*y)}%)', 
+                                justify='center', 
+                                style=style_base if l != winner else style_with_bold) 
+                                for l,y in zip(['Compost', 'Recyclable', 'Trash'], yhat)]
             return (img, { 'visibility' : 'hidden' }, 
                     html.Div(children, 
                              style={
